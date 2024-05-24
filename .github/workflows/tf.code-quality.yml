@@ -1,0 +1,218 @@
+######################################################
+# Terraform Code Quality Workflow
+#
+# Performs code quality tasks against a Terraform
+# configuration.
+#
+# ###OMITTED###
+# jobs:
+#   terraform_code_quality:
+#     uses: ./.github/workflows/tf.code-quality.yml
+#     # OR uses:GITHUB_OWNER/REPO_NAME/.github/workflows/tf.code-quality.yml@main
+#     with:
+#       terraform_path: some/path
+#     permissions:
+#       contents: read
+#       checks: write  # needed for: tflint 
+#       pull-requests: write  # needed for: tflint
+#       security-events: write  # needed for: trivy, checkov
+# ###OMITTED###
+######################################################
+
+name: terraform code quality
+
+on:
+  workflow_call:
+    inputs:
+      # globals
+      terraform_version:
+        type: string
+        description: Terraform version to use.
+        required: false
+        default: latest
+      terraform_path:
+        type: string
+        description: Path to the location of your Terraform configuration or module.
+        required: false
+        default: "."
+      # terraform builtins
+      enable_fmt:
+        type: boolean
+        description: Run terraform fmt
+        required: false
+        default: true
+      enable_validate:
+        type: boolean
+        description: Run terraform validate
+        required: false
+        default: true
+      enable_test:
+        type: boolean
+        description: Run terraform test
+        required: false
+        default: false
+      # tflint
+      enable_tflint:
+        type: boolean
+        description: Run tflint
+        required: false
+        default: false
+      tflint_init:
+        type: boolean
+        description: Initialize tflint
+        required: false
+        default: true
+      tflint_fail_on_error:
+        type: boolean
+        description: Fail the tflint job on any errors
+        required: false
+        default: false
+      # trivy config
+      enable_trivy:
+        type: boolean
+        description: Run trivy
+        required: false
+        default: true
+      # checkov
+      enable_checkov:
+        type: boolean
+        description: Run checkov
+        required: false
+        default: true
+
+env:
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_path }}
+    permissions:
+      contents: read
+    if: inputs.enable_fmt
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_path }}
+    permissions:
+      contents: read
+    if: inputs.enable_validate
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+        env:
+          TF_CLI_ARGS_init: -backend=false
+      - name: terraform validate
+        run: terraform validate
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_path }}
+    needs: [fmt, validate]
+    permissions:
+      contents: read
+    if: inputs.enable_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+      - name: terraform test
+        run: terraform test
+
+  tflint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    if: inputs.enable_tflint
+    steps:
+      - uses: actions/checkout@v4
+      - name: tflint
+        uses: reviewdog/action-tflint@v1
+        with:
+          working_directory: ${{ inputs.terraform_path }}
+          filter_mode: nofilter
+          reporter: github-check
+          fail_on_error: ${{ inputs.tflint_fail_on_error }}
+          tflint_init: ${{ inputs.tflint_init }}
+        if: github.event_name != 'pull_request'
+      - name: tflint-pr
+        uses: reviewdog/action-tflint@v1
+        with:
+          working_directory: ${{ inputs.terraform_path }}
+          filter_mode: nofilter
+          reporter: github-pr-check
+          fail_on_error: ${{ inputs.tflint_fail_on_error }}
+          tflint_init: ${{ inputs.tflint_init }}
+        if: github.event_name == 'pull_request'
+
+  trivy:
+    runs-on: ubuntu-latest
+    if: inputs.enable_trivy
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: trivy
+        uses: aquasecurity/trivy-action@0.21.0
+        with:
+          scan-type: config
+          scan-ref: ${{ inputs.terraform_path }}
+          exit-code: 1
+          hide-progress: true
+          ignore-unfixed: false
+          format: sarif
+          output: trivy.sarif
+      - name: upload trivy scan
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: trivy.sarif
+
+  checkov:
+    runs-on: ubuntu-latest
+    if: inputs.enable_checkov
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: ${{ inputs.terraform_path }}
+          framework: terraform
+          output_format: cli,sarif
+          output_file_path: console,checkov.sarif
+      - name: upload trivy scan
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: checkov.sarif
