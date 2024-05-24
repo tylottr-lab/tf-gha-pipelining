@@ -46,6 +46,11 @@ on:
         description: Arguments to pass to terraform plan
         required: false
         default: ""
+      skip_apply:
+        type: boolean
+        description: Perform only a plan if this is true
+        required: false
+        default: false
       # target deployment environment
       environment:
         type: string
@@ -98,7 +103,7 @@ jobs:
       contents: read
     environment:
       name: ${{ inputs.environment }}
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !inputs.skip_apply
     steps:
       - uses: actions/checkout@v4
       - name: setup terraform
