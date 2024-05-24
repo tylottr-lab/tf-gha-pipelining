@@ -1,7 +1,8 @@
 ######################################################
 # Terraform Apply Workflow
 #
-# Performs a simple plan-apply operation
+# Performs a simple plan-apply operation with
+# fmt and validate built into the pipeline.
 #
 # ###OMITTED###
 # jobs:
@@ -42,6 +43,11 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
+      continue_on_validate_error:
+        type: boolean
+        description: Fail if terraform validate reports errors
+        required: false
+        default: true
       terraform_init_args:
         type: string
         description: Arguments to pass to terraform init  
@@ -89,7 +95,7 @@ jobs:
       - name: terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: true
+        continue-on-error: ${{ inputs.continue_on_validate_error }}
       - name: terraform init
         id: init
         run: terraform init
