@@ -71,7 +71,7 @@ on:
         type: boolean
         description: Run trivy
         required: false
-        default: false
+        default: true
       enable_test:
         type: boolean
         description: Run terraform test
@@ -188,11 +188,27 @@ jobs:
   
   trivy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.terraform_path }}
     if: inputs.enable_trivy
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - name: trivy
+        uses: aquasecurity/trivy-action@0.21.0
+        with:
+          scan-type: config
+          exit-code: 0
+          hide-progress: true
+          ignore-unfixed: true
+          format: sarif
+          output: trivy.sarif
+      - name: upload trivy scan
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy.sarif
 
   test:
     runs-on: ubuntu-latest
