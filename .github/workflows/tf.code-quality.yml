@@ -135,16 +135,17 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
       - name: terraform init
-        # id: init
+        id: init
         run: terraform init
+        env:
           TF_CLI_ARGS_init: ${{ inputs.terraform_init_args }}
       - name: terraform validate
-        # id: validate
+        id: validate
         run: terraform validate
         env:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
       - name: terraform test
-        # id: test
+        id: test
         run: terraform test
         env:
           TF_CLI_ARGS_test: ${{ inputs.terraform_test_args }}
