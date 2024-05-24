@@ -16,7 +16,7 @@ on:
       - app1/envs/dev/*.tf
 
 jobs:
-  # code-quality:
+  # tf-code-quality:
   #   uses: ./.github/workflows/tf.code-quality.yml
   #   with:
   #     terraform_path: app1/envs/dev
@@ -29,14 +29,14 @@ jobs:
   #     checks: write
   #     pull-requests: write
   #     security-events: write
-  plan-apply:
+  tf-plan-apply:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/dev
-      continue_on_fmt_error: false
+      # continue_on_fmt_error: true
       terraform_plan_args: -var valid=super
       # skip_apply: true
       environment: terraform
     permissions:
       contents: read
-    # needs: [code-quality]
+    # needs: [tf-code-quality]
