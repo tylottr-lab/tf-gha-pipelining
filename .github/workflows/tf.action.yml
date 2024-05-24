@@ -1,0 +1,237 @@
+######################################################
+# Terraform Test Workflow
+#
+# Performs a simple test to ensure that Terraform is:
+# - Formatted correctly
+# - (optional) Validates
+# - (optional) run tflint
+# - (optional) run tfsec
+#
+# ###OMITTED###
+# # permissions block is required
+# # to ensure it can write to checks and PRs
+# jobs:
+#   terraform_job:
+#     uses: ./.github/workflows/tf.test.yml # or: GITHUB_OWNER/REPO_NAME/.github/workflows/tf.test.yml@main
+#     with:
+#       terraform_path: path/to/module
+#     permissions:
+#       contents: read
+#       checks: write
+#       pull-requests: write
+# ###OMITTED###
+######################################################
+
+name: terraform
+
+on:
+  workflow_call:
+    inputs:
+      terraform_version:
+        type: string
+        description: Terraform version to use.
+        required: false
+        default: latest
+      terraform_path:
+        type: string
+        description: Path to the location of your Terraform configuration or module.
+        required: false
+        default: "."
+      environment:
+        type: string
+        description: Environment to use for apply operations
+        required: false
+        default: terraform
+      enable_validate:
+        type: boolean
+        description: Run terraform validate
+        required: false
+        default: true
+      enable_tflint:
+        type: boolean
+        description: Run tflint
+        required: false
+        default: true
+      enable_tfsec:
+        type: boolean
+        description: Run tfsec as part of the tests
+        required: false
+        default: true
+      reviewdog_pr_reporter:
+        type: string
+        description: The reporter to use with Reviewdog and PR.
+        required: false
+        default: github-pr-check
+      enable_test:
+        type: boolean
+        description: Run terraform test
+        required: false
+        default: false
+      enable_plan:
+        type: boolean
+        description: Run terraform plan
+        required: false
+        default: false
+      enable_apply:
+        type: boolean
+        description: Run terraform apply
+        required: false
+        default: false
+
+env:
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+
+defaults:
+  run:
+    working-directory: ${{ inputs.terraform_path }}
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+  validate:
+    runs-on: ubuntu-latest
+    if: inputs.enable_validate
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+        env:
+          TF_CLI_ARGS_init: -backend=false
+      - name: terraform validate
+        run: terraform validate
+
+  tflint:
+    runs-on: ubuntu-latest
+    if: inputs.enable_tflint
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: tflint
+        uses: reviewdog/action-tflint@v1
+        with:
+          filter_mode: nofilter
+          reporter: github-check
+          fail_on_error: false
+          tflint_init: true
+          working_directory: ${{ inputs.terraform_path }}
+        if: github.event_name == 'push'
+      - name: tflint-pr
+        uses: reviewdog/action-tflint@v1
+        with:
+          filter_mode: nofilter
+          reporter: ${{ inputs.reviewdog_pr_reporter }}
+          fail_on_error: false
+          tflint_init: true
+          working_directory: ${{ inputs.terraform_path }}
+        if: github.event_name == 'pull_request'
+
+  tfsec:
+    runs-on: ubuntu-latest
+    if: inputs.enable_tfsec
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: tfsec
+        uses: reviewdog/action-tfsec@v1
+        with:
+          filter_mode: nofilter
+          reporter: github-check
+          fail_on_error: false
+          working_directory: ${{ inputs.terraform_path }}
+        if: github.event_name == 'push'
+      - name: tfsec-pr
+        uses: reviewdog/action-tfsec@v1
+        with:
+          filter_mode: nofilter
+          reporter: ${{ inputs.reviewdog_pr_reporter }}
+          fail_on_error: true
+          working_directory: ${{ inputs.terraform_path }}
+        if: github.event_name == 'pull_request'
+
+  test:
+    runs-on: ubuntu-latest
+    if: inputs.enable_test
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+      - name: terraform plan
+        run: terraform plan
+
+  plan:
+    runs-on: ubuntu-latest
+    if: inputs.enable_plan
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+      - name: terraform plan
+        run: terraform plan -out tf.plan
+      - name: upload plan
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: plan
+          path: "**/tf.plan"
+          if-no-files-found: error
+          overwrite: true
+
+  apply:
+    runs-on: ubuntu-latest
+    if: inputs.enable_apply
+    permissions:
+      contents: read
+    environment:
+      name: ${{ inputs.apply_environment }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform init
+        run: terraform init
+      - name: upload plan
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: plan
+      - name: terraform apply
+        run: terraform apply tf.plan
