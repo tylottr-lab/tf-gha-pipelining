@@ -175,6 +175,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    needs: [fmt, validate, tflint, tfsec]
     if: inputs.enable_test
     permissions:
       contents: read
@@ -191,6 +192,7 @@ jobs:
 
   plan:
     runs-on: ubuntu-latest
+    needs: [test]
     if: inputs.enable_plan
     permissions:
       contents: read
@@ -215,6 +217,7 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
+    needs: [plan]
     if: inputs.enable_apply
     permissions:
       contents: read
