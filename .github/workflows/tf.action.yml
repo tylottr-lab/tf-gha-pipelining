@@ -267,7 +267,7 @@ jobs:
     permissions:
       contents: read
     environment:
-      name: ${{ inputs.apply_environment }}
+      name: ${{ inputs.environment }}
     if: inputs.enable_apply
     steps:
       - uses: actions/checkout@v4
