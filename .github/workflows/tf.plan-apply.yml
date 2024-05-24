@@ -31,6 +31,11 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
+      terraform_cli_args:
+        type: string
+        description: Arguments to pass to terraform
+        required: false
+        default: ""
       # target deployment environment
       environment:
         type: string
@@ -60,6 +65,8 @@ jobs:
         run: terraform init
       - name: terraform plan
         run: terraform plan -out tf.plan
+        env:
+          TF_CLI_ARGS: ${{ inputs.terraform_cli_args }}
       - name: upload plan
         uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
@@ -94,3 +101,5 @@ jobs:
           name: plan
       - name: terraform apply
         run: terraform apply tf.plan
+        env:
+          TF_CLI_ARGS: ${{ inputs.terraform_cli_args }}
