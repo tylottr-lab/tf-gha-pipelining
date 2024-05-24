@@ -35,11 +35,6 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
-      terraform_cli_args:
-        type: string
-        description: Arguments to pass to terraform
-        required: false
-        default: ""
       # terraform builtins
       enable_fmt:
         type: boolean
@@ -51,11 +46,21 @@ on:
         description: Run terraform validate
         required: false
         default: true
+      terraform_validate_args:
+        type: string
+        description: Arguments to pass to terraform validate
+        required: false
+        default: ""
       enable_test:
         type: boolean
         description: Run terraform test
         required: false
         default: false
+      terraform_test_args:
+        type: string
+        description: Arguments to pass to terraform test
+        required: false
+        default: ""
       # tflint
       enable_tflint:
         type: boolean
@@ -129,7 +134,7 @@ jobs:
       - name: terraform validate
         run: terraform validate
         env:
-          TF_CLI_ARGS: ${{ inputs.terraform_cli_args }}
+          TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
 
   test:
     runs-on: ubuntu-latest
@@ -151,7 +156,7 @@ jobs:
       - name: terraform test
         run: terraform test
         env:
-          TF_CLI_ARGS: ${{ inputs.terraform_cli_args }}
+          TF_CLI_ARGS_test: ${{ inputs.terraform_test_args }}
 
   tflint:
     runs-on: ubuntu-latest
