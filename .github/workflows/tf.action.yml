@@ -59,7 +59,7 @@ on:
         default: true
       enable_tfsec:
         type: boolean
-        description: Run tfsec as part of the tests
+        description: Run tfsec
         required: false
         default: true
       reviewdog_pr_reporter:
@@ -67,6 +67,11 @@ on:
         description: The reporter to use with Reviewdog and PR.
         required: false
         default: github-pr-check
+      enable_trivy:
+        type: boolean
+        description: Run trivy
+        required: false
+        default: false
       enable_test:
         type: boolean
         description: Run terraform test
@@ -97,7 +102,7 @@ jobs:
       contents: read
     if: inputs.enable_fmt
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -115,7 +120,7 @@ jobs:
       contents: read
     if: inputs.enable_validate
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -135,7 +140,7 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: tflint
         uses: reviewdog/action-tflint@v1
         with:
@@ -163,7 +168,7 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: tfsec
         uses: reviewdog/action-tfsec@v1
         with:
@@ -180,6 +185,14 @@ jobs:
           fail_on_error: true
           working_directory: ${{ inputs.terraform_path }}
         if: github.event_name == 'pull_request'
+  
+  trivy:
+    runs-on: ubuntu-latest
+    if: inputs.enable_trivy
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
 
   test:
     runs-on: ubuntu-latest
@@ -191,7 +204,7 @@ jobs:
       contents: read
     if: inputs.enable_test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -211,7 +224,7 @@ jobs:
       contents: read
     if: inputs.enable_plan
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -241,7 +254,7 @@ jobs:
       name: ${{ inputs.apply_environment }}
     if: inputs.enable_apply
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -249,10 +262,9 @@ jobs:
       - name: terraform init
         run: terraform init
       - name: download plan
-        id: plan
         uses: actions/download-artifact@v4
         if: github.event_name != 'pull_request'
         with:
           name: plan
       - name: terraform apply
-        run: terraform apply ${{ steps.plan.outputs.download-path }}/tf.plan
+        run: terraform apply tf.plan
