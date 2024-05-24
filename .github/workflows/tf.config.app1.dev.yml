@@ -17,7 +17,7 @@ on:
 
 jobs:
   code-quality:
-    uses: ./.github/workflows/tf.code-quality.yml
+    uses: ./.github/workflows/reusable/tf.code-quality.yml
     with:
       terraform_path: app1/envs/dev
       enable_test: false
@@ -30,7 +30,7 @@ jobs:
       pull-requests: write
       security-events: write
   plan-apply:
-    uses: ./.github/workflows/tf.plan-apply.yml
+    uses: ./.github/workflows/reusable/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/dev
       terraform_plan_args: -var valid=super
