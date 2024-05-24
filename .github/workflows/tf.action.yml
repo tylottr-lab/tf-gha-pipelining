@@ -194,6 +194,7 @@ jobs:
     if: inputs.enable_trivy
     permissions:
       contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
       - name: trivy
@@ -215,7 +216,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
-    needs: [fmt, validate, tflint, tfsec]
+    needs: [fmt, validate, tflint, tfsec, trivy]
     permissions:
       contents: read
     if: inputs.enable_test
