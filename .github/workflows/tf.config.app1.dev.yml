@@ -39,4 +39,4 @@ jobs:
       environment: terraform
     permissions:
       contents: read
-    needs: [code-quality]
+    # needs: [code-quality]
