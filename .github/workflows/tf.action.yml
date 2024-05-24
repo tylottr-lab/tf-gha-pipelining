@@ -198,8 +198,8 @@ jobs:
           terraform_version: ${{ inputs.terraform_version }}
       - name: terraform init
         run: terraform init
-      - name: terraform plan
-        run: terraform plan
+      - name: terraform test
+        run: terraform test
 
   plan:
     runs-on: ubuntu-latest
