@@ -249,9 +249,10 @@ jobs:
       - name: terraform init
         run: terraform init
       - name: download plan
+        id: plan
         uses: actions/download-artifact@v4
         if: github.event_name != 'pull_request'
         with:
           name: plan
       - name: terraform apply
-        run: terraform apply tf.plan
+        run: terraform apply ${{ steps.plan.download-path }}/tf.plan
