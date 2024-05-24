@@ -41,32 +41,32 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
+      terraform_init_args:
+        type: string
+        description: Arguments to pass to terraform init
+        required: false
+        default: ""
+      terraform_validate_args:
+        type: string
+        description: Arguments to pass to terraform validate
+        required: false
+        default: ""
+      terraform_test_args:
+        type: string
+        description: Arguments to pass to terraform test
+        required: false
+        default: ""
       # terraform builtins
       enable_fmt:
         type: boolean
         description: Run terraform fmt
         required: false
         default: true
-      enable_validate:
-        type: boolean
-        description: Run terraform validate
-        required: false
-        default: true
-      terraform_validate_args:
-        type: string
-        description: Arguments to pass to terraform validate
-        required: false
-        default: ""
       enable_test:
         type: boolean
         description: Run terraform test
         required: false
         default: false
-      terraform_test_args:
-        type: string
-        description: Arguments to pass to terraform test
-        required: false
-        default: ""
       # tflint
       enable_tflint:
         type: boolean
@@ -119,35 +119,12 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
-  validate:
-    runs-on: ${{ inputs.runs-on }}
-    defaults:
-      run:
-        working-directory: ${{ inputs.terraform_path }}
-    permissions:
-      contents: read
-    if: inputs.enable_validate
-    steps:
-      - uses: actions/checkout@v4
-      - name: setup terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ inputs.terraform_version }}
-      - name: terraform init
-        run: terraform init
-        env:
-          TF_CLI_ARGS_init: -backend=false
-      - name: terraform validate
-        run: terraform validate
-        env:
-          TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
-
   test:
     runs-on: ${{ inputs.runs-on }}
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
-    needs: [fmt, validate, tflint, trivy, checkov]
+    needs: [fmt, tflint, trivy, checkov]
     permissions:
       contents: read
     if: inputs.enable_test
@@ -158,8 +135,16 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
       - name: terraform init
+        id: init
         run: terraform init
+          TF_CLI_ARGS_init: ${{ inputs.terraform_init_args }}
+      - name: terraform validate
+        id: validate
+        run: terraform validate
+        env:
+          TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
       - name: terraform test
+        id: test
         run: terraform test
         env:
           TF_CLI_ARGS_test: ${{ inputs.terraform_test_args }}

@@ -44,7 +44,12 @@ on:
         default: "."
       terraform_init_args:
         type: string
-        description: Arguments to pass to terraform init
+        description: Arguments to pass to terraform init  
+        required: false
+        default: ""
+      terraform_validate_args:
+        type: string
+        description: Arguments to pass to terraform validate
         required: false
         default: ""
       terraform_plan_args:
@@ -81,10 +86,20 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
+      - name: terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
       - name: terraform init
+        id: init
         run: terraform init
         env:
           TF_CLI_ARGS_init: ${{ inputs.terraform_init_args }}
+      - name: terraform validate
+        id: validate
+        run: terraform validate
+        env:
+          TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
       - name: terraform plan
         id: plan
         run: terraform plan -out tf.plan
@@ -92,7 +107,7 @@ jobs:
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
       - name: upload plan
         uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && !inputs.skip_apply
         with:
           name: plan
           path: "**/tf.plan"
@@ -111,16 +126,6 @@ jobs:
       name: ${{ inputs.environment }}
     if: github.event_name != 'pull_request' && !inputs.skip_apply
     steps:
-      - uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: user1,user2,org-team1
-          minimum-approvals: 1
-          issue-title: "Deploying v1.3.5 to prod from staging"
-          issue-body: "Please approve or deny the deployment of version v1.3.5."
-          exclude-workflow-initiator-as-approver: false
-          additional-approved-words: ''
-          additional-denied-words: ''
       - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
@@ -135,6 +140,7 @@ jobs:
         with:
           name: plan
       - name: terraform apply
+        id: apply
         run: terraform apply tf.plan
         env:
           TF_CLI_ARGS_apply: ${{ inputs.terraform_apply_args }}
