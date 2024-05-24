@@ -24,6 +24,12 @@ name: terraform code quality
 on:
   workflow_call:
     inputs:
+      # gha-specific
+      runs-on:
+        type: string
+        description: Runner label to use for the jobs
+        required: false
+        default: ubuntu-latest
       # globals
       terraform_version:
         type: string
@@ -96,7 +102,7 @@ env:
 
 jobs:
   fmt:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
@@ -114,7 +120,7 @@ jobs:
         continue-on-error: true
 
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
@@ -137,7 +143,7 @@ jobs:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
@@ -159,7 +165,7 @@ jobs:
           TF_CLI_ARGS_test: ${{ inputs.terraform_test_args }}
 
   tflint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     permissions:
       contents: read
       checks: write
@@ -187,7 +193,7 @@ jobs:
         if: github.event_name == 'pull_request'
 
   trivy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     if: inputs.enable_trivy
     permissions:
       contents: read
@@ -211,7 +217,7 @@ jobs:
           sarif_file: trivy.sarif
 
   checkov:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     if: inputs.enable_checkov
     permissions:
       contents: read
