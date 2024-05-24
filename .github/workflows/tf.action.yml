@@ -8,8 +8,6 @@
 # - (optional) run tfsec
 #
 # ###OMITTED###
-# # permissions block is required
-# # to ensure it can write to checks and PRs
 # jobs:
 #   terraform_job:
 #     uses: ./.github/workflows/tf.test.yml # or: GITHUB_OWNER/REPO_NAME/.github/workflows/tf.test.yml@main
@@ -19,6 +17,7 @@
 #       contents: read
 #       checks: write
 #       pull-requests: write
+#       security-events: write
 # ###OMITTED###
 ######################################################
 
