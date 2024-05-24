@@ -144,7 +144,7 @@ jobs:
           fail_on_error: false
           tflint_init: true
           working_directory: ${{ inputs.terraform_path }}
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
       - name: tflint-pr
         uses: reviewdog/action-tflint@v1
         with:
@@ -171,7 +171,7 @@ jobs:
           reporter: github-check
           fail_on_error: false
           working_directory: ${{ inputs.terraform_path }}
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
       - name: tfsec-pr
         uses: reviewdog/action-tfsec@v1
         with:
