@@ -9,6 +9,10 @@ variable "notso" {
   default = "secret"
 }
 
-output "notso" {
-  value = var.notso
+variable "valid" {
+  default = "default"
+}
+
+output "valid" {
+  value = var.valid
 }
