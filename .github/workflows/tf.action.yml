@@ -255,4 +255,4 @@ jobs:
         with:
           name: plan
       - name: terraform apply
-        run: terraform apply ${{ steps.plan.download-path }}/tf.plan
+        run: terraform apply ${{ steps.plan.outputs.download-path }}/tf.plan
