@@ -43,9 +43,9 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
-      continue_on_validate_error:
+      continue_on_fmt_error:
         type: boolean
-        description: Fail if terraform validate reports errors
+        description: Fail if terraform fmt reports errors
         required: false
         default: true
       terraform_init_args:
@@ -95,7 +95,7 @@ jobs:
       - name: terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: ${{ inputs.continue_on_validate_error }}
+        continue-on-error: ${{ inputs.continue_on_fmt_error }}
       - name: terraform init
         id: init
         run: terraform init

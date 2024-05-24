@@ -33,7 +33,7 @@ jobs:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/dev
-      continue_on_validate_error: false
+      continue_on_fmt_error: false
       terraform_plan_args: -var valid=super
       # skip_apply: true
       environment: terraform
