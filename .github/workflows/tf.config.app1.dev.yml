@@ -16,23 +16,24 @@ on:
       - app1/envs/dev/*.tf
 
 jobs:
-  code-quality:
-    uses: ./.github/workflows/tf.code-quality.yml
-    with:
-      terraform_path: app1/envs/dev
-      enable_test: false
-      enable_tflint: false
-      enable_trivy: false
-      enable_checkov: false
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: write
-      security-events: write
+  # code-quality:
+  #   uses: ./.github/workflows/tf.code-quality.yml
+  #   with:
+  #     terraform_path: app1/envs/dev
+  #     enable_test: false
+  #     enable_tflint: false
+  #     enable_trivy: false
+  #     enable_checkov: false
+  #   permissions:
+  #     contents: read
+  #     checks: write
+  #     pull-requests: write
+  #     security-events: write
   plan-apply:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/dev
+      continue_on_validate_error: false
       terraform_plan_args: -var valid=super
       # skip_apply: true
       environment: terraform
