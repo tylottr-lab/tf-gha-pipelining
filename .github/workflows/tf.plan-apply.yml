@@ -148,8 +148,8 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: ${{ inputs.approvers }}
           minimum-approvals: ${{ inputs.minimum-approvals }}
-          additional-approved-words: approve, approved, yes, apply, confirm
-          additional-denied-words: deny, denied, no
+          additional-approved-words: apply, confirm
+          additional-denied-words: backout
         if: ${{ inputs.approvers != 'none' }}
       - uses: actions/checkout@v4
       - name: setup terraform
