@@ -11,8 +11,6 @@
 #     # OR uses:GITHUB_OWNER/REPO_NAME/.github/workflows/tf.plan-apply.yml@main
 #     with:
 #       terraform_path: some/path
-#     permissions:
-#       contents: read
 # ###OMITTED###
 ######################################################
 
@@ -85,8 +83,6 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: setup terraform
@@ -128,8 +124,6 @@ jobs:
       run:
         working-directory: ${{ inputs.terraform_path }}
     needs: [plan]
-    permissions:
-      contents: read
     environment:
       name: ${{ inputs.environment }}
     if: github.event_name != 'pull_request' && !inputs.skip_apply

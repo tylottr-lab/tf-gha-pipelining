@@ -5,14 +5,14 @@ on:
   push:
     branches: [main]
     paths:
-      - .github/workflows/tf.config.app1.yml
+      - .github/workflows/terraform.config.app1.yml
       - app1/modules/app1/*.tf
       - app1/envs/dev/*.tf
       - app1/envs/test/*.tf
   pull_request:
     branches: [main]
     paths:
-      - .github/workflows/tf.config.app1.yml
+      - .github/workflows/terraform.config.app1.yml
       - app1/modules/app1/*.tf
       - app1/envs/dev/*.tf
       - app1/envs/test/*.tf
@@ -22,12 +22,12 @@ jobs:
     strategy:
       matrix:
         configs:
-          - terraform_plan_args: -var valid=dev
-            environment: dev
+          - environment: dev
             skip_apply: false
-          - terraform_plan_args: -var valid=test
-            environment: test
-            skip_apply: true  
+            terraform_plan_args: -var valid=dev
+          - environment: test
+            skip_apply: true
+            terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/${{ matrix.configs.environment }}
