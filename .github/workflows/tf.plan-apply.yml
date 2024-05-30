@@ -120,7 +120,8 @@ jobs:
         id: plan
         run: |
           terraform plan -detailed-exitcode -out $TF_PLAN_FILE
-          case $? in
+          TF_EXITCODE=$?
+          case $TF_EXITCODE in
             0) echo "TF_PLAN_DIFF=false" >> "$GITHUB_OUTPUT";;
             2) echo "TF_PLAN_DIFF=true" >> "$GITHUB_OUTPUT";;
             *) echo "Terraform CLI indicated an error-state exit code"; exit 1;;
