@@ -25,6 +25,7 @@ jobs:
         run: |
           echo "TF_VAR_valid=set-through-prior-job" >> "$GITHUB_ENV"
   tf-plan-apply:
+    needs: [setup-env]
     strategy:
       matrix:
         configs:
