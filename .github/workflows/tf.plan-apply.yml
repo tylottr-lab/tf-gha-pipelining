@@ -34,7 +34,7 @@ on:
         type: string
         description: Comma-delimited list of user or group approvers
         required: false
-        default: "none"
+        default: none
       minimum-approvals:
         type: number
         description: Number of approvals required for an apply to run
