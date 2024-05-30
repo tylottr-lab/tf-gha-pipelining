@@ -77,7 +77,7 @@ on:
 env:
   TF_IN_AUTOMATION: true
   TF_INPUT: false
-  TF_PLAN_NAME: ${{ inputs.environment }}.plan
+  TF_PLAN_FILE: ${{ inputs.environment }}.plan
 
 jobs:
   plan:
@@ -109,15 +109,15 @@ jobs:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
       - name: terraform plan
         id: plan
-        run: terraform plan -out ${{ env.TF_PLAN_NAME }}
+        run: terraform plan -out ${{ env.TF_PLAN_FILE }}
         env:
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
       - name: upload plan
         uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request' && !inputs.skip_apply
         with:
-          name: ${{ env.TF_PLAN_NAME }}
-          path: "**/${{ env.TF_PLAN_NAME }}"
+          name: ${{ env.TF_PLAN_FILE }}
+          path: "**/${{ env.TF_PLAN_FILE }}"
           if-no-files-found: error
           overwrite: true
           retention-days: 1
@@ -146,9 +146,9 @@ jobs:
       - name: download plan
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.TF_PLAN_NAME }}
+          name: ${{ env.TF_PLAN_FILE }}
       - name: terraform apply
         id: apply
-        run: terraform apply ${{ env.TF_PLAN_NAME }}
+        run: terraform apply ${{ env.TF_PLAN_FILE }}
         env:
           TF_CLI_ARGS_apply: ${{ inputs.terraform_apply_args }}

@@ -29,7 +29,7 @@ jobs:
           - terraform_path: app1/envs/test
             terraform_plan_args: -var valid=test
             environment: test
-            skip_apply: false  
+            skip_apply: true  
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: ${{ matrix.configs.terraform_path }}
