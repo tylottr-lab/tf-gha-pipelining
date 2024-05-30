@@ -154,6 +154,9 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: ${{ inputs.approvers }}
           minimum-approvals: ${{ inputs.minimum-approvals }}
+          timeout-minutes: 5
+          # issue-title: TF Apply - Manual Approval - ${{ inputs.terraform_path }} - ${{ github.run_id }}
+          # issue-body: foo
           additional-approved-words: apply, confirm
           additional-denied-words: backout
         if: ${{ inputs.approvers != 'none' }}
