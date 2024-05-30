@@ -95,7 +95,7 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
     outputs:
-      TF_PLAN_DIFF: ${{ steps.plan.outputs.TF_PLAN_DIFF }}
+      exitcode: ${{ steps.plan.outputs.exitcode }}
     steps:
       - uses: actions/checkout@v4
       - name: setup terraform
@@ -122,10 +122,6 @@ jobs:
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
-      - name: evaluate
-        run: echo $out
-        env:
-          out: ${{ steps.plan.outputs.TF_PLAN_DIFF }}
       - name: upload plan
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
