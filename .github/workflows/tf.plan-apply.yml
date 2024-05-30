@@ -121,9 +121,10 @@ jobs:
         run: |
           terraform plan -detailed-exitcode -out $TF_PLAN_FILE
           TF_EXITCODE=$?
+          echo $TF_EXITCODE
           case $TF_EXITCODE in
-            0) echo "TF_PLAN_DIFF=false" >> "$GITHUB_OUTPUT";;
-            2) echo "TF_PLAN_DIFF=true" >> "$GITHUB_OUTPUT";;
+            0) echo "Got 0"; echo "TF_PLAN_DIFF=false" >> "$GITHUB_OUTPUT";;
+            2) echo "Got 2"; echo "TF_PLAN_DIFF=true" >> "$GITHUB_OUTPUT";;
             *) echo "Terraform CLI indicated an error-state exit code"; exit 1;;
           esac
         env:
