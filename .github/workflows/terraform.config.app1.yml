@@ -18,14 +18,15 @@ on:
       - app1/envs/test/*.tf
 
 jobs:
-  setup-env:
-    runs-on: ubuntu-latest
-    steps:
-      - name: setup-env
-        run: |
-          echo "TF_VAR_valid=set-through-prior-job" >> "$GITHUB_ENV"
+  # setup-env:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: setup-env
+  #       run: |
+  #         echo "TF_VAR_valid=set-through-prior-job" >> "$GITHUB_ENV"
   tf-plan-apply:
-    needs: [setup-env]
+    permissions:
+      issues: write
     strategy:
       matrix:
         configs:
@@ -41,3 +42,4 @@ jobs:
       terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
       skip_apply: ${{ matrix.configs.skip_apply }}
       environment: ${{ matrix.configs.environment }}
+      approvers: tylottr
