@@ -18,6 +18,12 @@ on:
       - app1/envs/test/*.tf
 
 jobs:
+  setup-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup-env
+        run: |
+          echo "TF_VAR_valid=set-through-prior-job" >> "$GITHUB_ENV"
   tf-plan-apply:
     strategy:
       matrix:
