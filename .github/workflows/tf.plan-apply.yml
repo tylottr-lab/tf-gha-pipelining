@@ -102,7 +102,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
-          terraform_wrapper: false
       - name: terraform fmt
         id: fmt
         run: terraform fmt -check
@@ -119,15 +118,7 @@ jobs:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
       - name: terraform plan
         id: plan
-        run: |
-          terraform plan -detailed-exitcode -out $TF_PLAN_FILE
-          TF_EXITCODE=$?
-          echo $TF_EXITCODE
-          case $TF_EXITCODE in
-            0) echo "Got 0"; echo "TF_PLAN_DIFF=false" >> "$GITHUB_OUTPUT";;
-            2) echo "Got 2"; echo "TF_PLAN_DIFF=true" >> "$GITHUB_OUTPUT";;
-            *) echo "Terraform CLI indicated an error-state exit code"; exit 1;;
-          esac
+        run: terraform plan -detailed-exitcode -out $TF_PLAN_FILE
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
@@ -137,7 +128,7 @@ jobs:
           out: ${{ steps.plan.outputs.TF_PLAN_DIFF }}
       - name: upload plan
         uses: actions/upload-artifact@v4
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply }}
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
         with:
           name: ${{ env.TF_PLAN_FILE }}
           path: "**/${{ env.TF_PLAN_FILE }}"
@@ -153,7 +144,7 @@ jobs:
     needs: [plan]
     environment:
       name: ${{ inputs.environment }}
-    if: ${{ github.event_name != 'pull_request' && needs.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply }}
+    if: ${{ github.event_name != 'pull_request' && needs.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
     permissions:
       issues: write
     steps:
@@ -169,7 +160,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
-          terraform_wrapper: false
       - name: terraform init
         run: terraform init
         env:
