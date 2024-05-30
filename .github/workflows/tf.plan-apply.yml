@@ -30,6 +30,15 @@ on:
         description: Environment to use for apply operations
         required: false
         default: tf
+      approvers:
+        type: string
+        description: Comma-delimited list of user or group approvers
+        required: true
+      minimum-approvals:
+        type: number
+        description: Number of approvals required for an apply to run
+        required: false
+        default: 1
       # globals
       terraform_version:
         type: string
@@ -137,7 +146,16 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
     if: github.event_name != 'pull_request' && needs.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply
+    permissions:
+      issues: write
     steps:
+      - uses: trstringer/manual-approval@v1
+        name: pre-approval
+        with:
+          approvers: ${{ inputs.approvers }}
+          minimum-approvals: ${{ inputs.minimum-approvals }}
+          additional-approved-words: approve, approved, yes, apply, confirm
+          additional-denied-words: deny, denied, no
       - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
