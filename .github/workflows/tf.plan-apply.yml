@@ -119,6 +119,7 @@ jobs:
           path: "**/tf.plan"
           if-no-files-found: error
           overwrite: true
+          retention-days: 1
 
   apply:
     runs-on: ${{ inputs.runs-on }}

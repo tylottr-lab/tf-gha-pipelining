@@ -1,0 +1,39 @@
+name: app1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/tf.config.app1.dev.yml
+      - app1/modules/app1/*.tf
+      - app1/envs/dev/*.tf
+      - app1/envs/test/*.tf
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/tf.config.app1.dev.yml
+      - app1/modules/app1/*.tf
+      - app1/envs/dev/*.tf
+      - app1/envs/test/*.tf
+
+jobs:
+  tf-plan-apply:
+    strategy:
+      matrix:
+        configs:
+          - terraform_path: app1/envs/dev
+            terraform_plan_args: -var valid=dev
+            environment: terraform
+            skip_apply: false
+          - terraform_path: app1/envs/test
+            terraform_plan_args: -var valid=test
+            environment: terraform
+            skip_apply: false  
+    uses: ./.github/workflows/tf.plan-apply.yml
+    with:
+      terraform_path: ${{ matrix.configs.terraform_path }}
+      # continue_on_fmt_error: true
+      terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
+      # skip_apply: true
+      environment: ${{ matrix.configs.environment }}
