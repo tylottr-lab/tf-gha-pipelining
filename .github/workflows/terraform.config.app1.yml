@@ -24,10 +24,10 @@ jobs:
         configs:
           - environment: dev
             skip_apply: false
-            terraform_plan_args: -var valid=dev
+            # terraform_plan_args: -var valid=dev
           - environment: test
             skip_apply: true
-            terraform_plan_args: -var valid=test
+            # terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/${{ matrix.configs.environment }}
