@@ -102,6 +102,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: false
       - name: terraform fmt
         id: fmt
         run: terraform fmt -check
@@ -168,6 +169,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ inputs.terraform_version }}
+          terraform_wrapper: false
       - name: terraform init
         run: terraform init
         env:
