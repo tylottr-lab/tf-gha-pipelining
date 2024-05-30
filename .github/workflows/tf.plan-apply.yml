@@ -33,7 +33,8 @@ on:
       approvers:
         type: string
         description: Comma-delimited list of user or group approvers
-        required: true
+        required: false
+        default: "none"
       minimum-approvals:
         type: number
         description: Number of approvals required for an apply to run
@@ -103,16 +104,13 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
       - name: terraform fmt
-        id: fmt
         run: terraform fmt -check
         continue-on-error: ${{ inputs.continue_on_fmt_error }}
       - name: terraform init
-        id: init
         run: terraform init
         env:
           TF_CLI_ARGS_init: ${{ inputs.terraform_init_args }}
       - name: terraform validate
-        id: validate
         run: terraform validate
         env:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
@@ -144,14 +142,15 @@ jobs:
     permissions:
       issues: write
     steps:
-      # - uses: trstringer/manual-approval@v1
-      #   name: pre-approval
-      #   with:
-      #     secret: ${{ github.TOKEN }}
-      #     approvers: ${{ inputs.approvers }}
-      #     minimum-approvals: ${{ inputs.minimum-approvals }}
-      #     additional-approved-words: approve, approved, yes, apply, confirm
-      #     additional-denied-words: deny, denied, no
+      - uses: trstringer/manual-approval@v1
+        name: pre-approval
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ inputs.approvers }}
+          minimum-approvals: ${{ inputs.minimum-approvals }}
+          additional-approved-words: approve, approved, yes, apply, confirm
+          additional-denied-words: deny, denied, no
+        if: ${{ inputs.approvers != 'none' }}
       - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
@@ -166,7 +165,6 @@ jobs:
         with:
           name: ${{ env.TF_PLAN_FILE }}
       - name: terraform apply
-        id: apply
         run: terraform apply $TF_PLAN_FILE
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
