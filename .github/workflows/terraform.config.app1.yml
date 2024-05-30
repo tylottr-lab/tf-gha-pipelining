@@ -34,7 +34,7 @@ jobs:
             skip_apply: false
             # terraform_plan_args: -var valid=dev
           - environment: test
-            skip_apply: true
+            skip_apply: false
             # terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
