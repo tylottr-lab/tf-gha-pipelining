@@ -87,12 +87,13 @@ env:
   TF_INPUT: false
   TF_PLAN_FILE: ${{ inputs.environment }}.plan
 
+defaults:
+  run:
+    working-directory: ${{ inputs.terraform_path }}
+
 jobs:
   plan:
     runs-on: ${{ inputs.runs-on }}
-    defaults:
-      run:
-        working-directory: ${{ inputs.terraform_path }}
     environment:
       name: ${{ inputs.environment }}
     outputs:
@@ -132,9 +133,6 @@ jobs:
 
   apply:
     runs-on: ${{ inputs.runs-on }}
-    defaults:
-      run:
-        working-directory: ${{ inputs.terraform_path }}
     needs: [plan]
     environment:
       name: ${{ inputs.environment }}
