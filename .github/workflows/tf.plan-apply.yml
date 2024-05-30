@@ -85,11 +85,12 @@ on:
 env:
   TF_IN_AUTOMATION: true
   TF_INPUT: false
+  TF_DIR: ${{ inputs.terraform_path }}
   TF_PLAN_FILE: ${{ inputs.environment }}.plan
 
 defaults:
   run:
-    working-directory: ${{ inputs.terraform_path }}
+    working-directory: ${{ env.TF_DIR }}
 
 jobs:
   plan:
