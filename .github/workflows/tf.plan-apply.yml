@@ -149,7 +149,6 @@ jobs:
           name: ${{ env.TF_PLAN_NAME }}
       - name: terraform apply
         id: apply
-        run: terraform apply $TF_PLAN_NAME
+        run: terraform apply ${{ env.TF_PLAN_NAME }}
         env:
-          TF_PLAN_NAME: ${{ env.TF_PLAN_NAME }}
           TF_CLI_ARGS_apply: ${{ inputs.terraform_apply_args }}
