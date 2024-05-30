@@ -129,7 +129,7 @@ jobs:
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
       - name: upload plan
         uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request' && steps.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply }}
         with:
           name: ${{ env.TF_PLAN_FILE }}
           path: "**/${{ env.TF_PLAN_FILE }}"
@@ -145,7 +145,7 @@ jobs:
     needs: [plan]
     environment:
       name: ${{ inputs.environment }}
-    if: github.event_name != 'pull_request' && needs.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply
+    if: ${{ github.event_name != 'pull_request' && needs.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply }}
     permissions:
       issues: write
     steps:
