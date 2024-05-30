@@ -83,6 +83,8 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
+    environment:
+      name: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v4
       - name: setup terraform
