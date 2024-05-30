@@ -119,14 +119,19 @@ jobs:
       - name: terraform plan
         id: plan
         run: |
-          terraform plan -detailed-exitcode -out ${{ env.TF_PLAN_FILE }}
+          terraform plan -detailed-exitcode -out $TF_PLAN_FILE
           case $? in
             0) echo "TF_PLAN_DIFF=false" >> "$GITHUB_OUTPUT";;
             2) echo "TF_PLAN_DIFF=true" >> "$GITHUB_OUTPUT";;
             *) echo "Terraform CLI indicated an error-state exit code"; exit 1;;
           esac
         env:
+          TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
+      - name: evaluate
+        run: echo $out
+        env:
+          out: ${{ steps.plan.outputs.TF_PLAN_DIFF }}
       - name: upload plan
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.TF_PLAN_DIFF == 'true' && !inputs.skip_apply }}
@@ -171,6 +176,7 @@ jobs:
           name: ${{ env.TF_PLAN_FILE }}
       - name: terraform apply
         id: apply
-        run: terraform apply ${{ env.TF_PLAN_FILE }}
+        run: terraform apply $TF_PLAN_FILE
         env:
+          TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_apply: ${{ inputs.terraform_apply_args }}
