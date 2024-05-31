@@ -86,6 +86,11 @@ on:
         description: Perform only a plan if this is true
         required: false
         default: false
+      provide_plan_summary:
+        type: boolean
+        description: Output a summary with the plan
+        required: false
+        default: true
       
 env:
   TF_IN_AUTOMATION: true
@@ -136,18 +141,20 @@ jobs:
           if-no-files-found: error
           overwrite: true
           retention-days: 1
-      ### TODO: LAB ZONE - Summaries
-      - name: plan output
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
+      - name: output plan
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply && inputs.provide_plan_summary }}
         run: |
-          echo "Plan for $TF_DIR" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          terraform show -no-color $TF_PLAN_FILE >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          Plan Summary for $TF_DIR/$TF_PLAN_FILE
+
+          ```
+          terraform show -no-color $TF_PLAN_FILE
+          ```
+          EOF
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_DIR: ${{ inputs.terraform_path }}
+      ### TODO: LAB ZONE - Summaries
       # - name: summary
       #   if: ${{ always() }}
       #   run: |
@@ -182,18 +189,18 @@ jobs:
       issues: write
     steps:
       ### TODO: LAB ZONE - Non-Environment Based Approvals
-      - uses: trstringer/manual-approval@v1
-        name: pre-approval
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: ${{ inputs.approvers }}
-          minimum-approvals: ${{ inputs.minimum-approvals }}
-          timeout-minutes: 5
-          # issue-title: TF Apply - Manual Approval - ${{ inputs.terraform_path }} - ${{ github.run_id }}
-          # issue-body: foo
-          additional-approved-words: apply, confirm
-          additional-denied-words: backout
-        if: ${{ inputs.approvers != 'none' }}
+      # - uses: trstringer/manual-approval@v1
+      #   name: pre-approval
+      #   with:
+      #     secret: ${{ github.TOKEN }}
+      #     approvers: ${{ inputs.approvers }}
+      #     minimum-approvals: ${{ inputs.minimum-approvals }}
+      #     timeout-minutes: 5
+      #     # issue-title: TF Apply - Manual Approval - ${{ inputs.terraform_path }} - ${{ github.run_id }}
+      #     # issue-body: foo
+      #     additional-approved-words: apply, confirm
+      #     additional-denied-words: backout
+      #   if: ${{ inputs.approvers != 'none' }}
       ### TODO: LAB ZONE - Non-Environment Based Approvals
       - uses: actions/checkout@v4
       - name: setup terraform
