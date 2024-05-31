@@ -139,9 +139,12 @@ jobs:
           cat << EOF > $GITHUB_STEP_SUMMARY
           Plan Summary for $TF_DIR
 
+          <details>
+          <summary>Click to Expand</summary>
           \`\`\`
           $TF_PLAN_OUTPUT
           \`\`\`
+          </details>
           EOF
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
