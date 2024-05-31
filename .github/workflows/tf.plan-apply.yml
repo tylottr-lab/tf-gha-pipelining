@@ -109,6 +109,7 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
       - name: terraform fmt
+        id: fmt
         run: terraform fmt -check
         continue-on-error: ${{ inputs.continue_on_fmt_error }}
       - name: terraform init
@@ -116,6 +117,7 @@ jobs:
         env:
           TF_CLI_ARGS_init: ${{ inputs.terraform_init_args }}
       - name: terraform validate
+        id: validate
         run: terraform validate
         env:
           TF_CLI_ARGS_validate: ${{ inputs.terraform_validate_args }}
@@ -134,6 +136,27 @@ jobs:
           if-no-files-found: error
           overwrite: true
           retention-days: 1
+      ### TODO: LAB ZONE - Summaries
+      - name: summary
+        if: ${{ always() }}
+        run: |
+          echo "### Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: $TARGET_ENVIRONMENT" >> $GITHUB_STEP_SUMMARY
+          echo "Configuration: $TF_DIR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| job | exitcode |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| terraform fmt | $TF_FMT_RESULT |" >> $GITHUB_STEP_SUMMARY
+          echo "| terraform validate | $TF_VALIDATE_RESULT |" >> $GITHUB_STEP_SUMMARY
+          echo "| terraform plan | $TF_PLAN_RESULT |" >> $GITHUB_STEP_SUMMARY
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+          TF_DIR: ${{ inputs.terraform_path }}
+          TF_FMT_RESULT: ${{ steps.fmt.outputs.exitcode }}
+          TF_VALIDATE_RESULT: ${{ steps.validate.outputs.exitcode }}
+          TF_PLAN_RESULT: ${{ steps.plan.outputs.exitcode }}
+      ### TODO: LAB ZONE - Summaries
 
   apply:
     runs-on: ${{ inputs.runs-on }}
