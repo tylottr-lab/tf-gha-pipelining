@@ -139,9 +139,15 @@ jobs:
       ### TODO: LAB ZONE - Summaries
       - name: plan output
         if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
-        run: terraform show -no-color $TF_PLAN_FILE > $GITHUB_STEP_SUMMARY
+        run: |
+          echo "Plan for $TF_DIR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          terraform show -no-color $TF_PLAN_FILE >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
+          TF_DIR: ${{ inputs.terraform_path }}
       # - name: summary
       #   if: ${{ always() }}
       #   run: |
