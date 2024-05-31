@@ -42,6 +42,4 @@ jobs:
       terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
       skip_apply: ${{ matrix.configs.skip_apply }}
       environment: ${{ matrix.configs.environment }}
-      env_vars: |
-        TF_VAR_valid=is-${{ secrets.TF_VAR_VALID }}
       # approvers: tylottr

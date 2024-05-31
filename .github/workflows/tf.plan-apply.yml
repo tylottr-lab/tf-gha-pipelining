@@ -56,13 +56,6 @@ on:
         description: Path to the location of your Terraform configuration or module.
         required: false
         default: "."
-      ### TODO: LAB ZONE - Env var injection
-      env_vars:
-        type: string
-        description: Environment variables to add to the plan and apply jobs
-        required: false
-        default: ""
-      ### TODO: LAB ZONE - Env var injection
       continue_on_fmt_error:
         type: boolean
         description: Fail if terraform fmt reports errors
@@ -115,12 +108,6 @@ jobs:
     outputs:
       exitcode: ${{ steps.plan.outputs.exitcode }}
     steps:
-      ### TODO: LAB ZONE - Env var injection
-      - name: setup-env
-        run: echo $ENV_VARS >> "$GITHUB_ENV"
-        env:
-          ENV_VARS: ${{ inputs.env_vars }}
-      ### TODO: LAB ZONE - Env var injection
       - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
@@ -216,12 +203,6 @@ jobs:
       #     additional-denied-words: backout
       #   if: ${{ inputs.approvers != 'none' }}
       ### TODO: LAB ZONE - Non-Environment Based Approvals
-      ### TODO: LAB ZONE - Env var injection
-      - name: setup-env
-        run: echo $ENV_VARS >> "$GITHUB_ENV"
-        env:
-          ENV_VARS: ${{ inputs.env_vars }}
-      ### TODO: LAB ZONE - Env var injection
       - uses: actions/checkout@v4
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
