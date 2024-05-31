@@ -133,7 +133,7 @@ jobs:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
       - name: output plan
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && inputs.output_plan_summary }}
+        if: ${{ steps.plan.outputs.exitcode == 2 && inputs.output_plan_summary }}
         run: |
           TF_PLAN_OUTPUT=$(terraform show -no-color $TF_PLAN_FILE)
           cat << EOF > $GITHUB_STEP_SUMMARY
