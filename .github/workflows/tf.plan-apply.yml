@@ -137,25 +137,30 @@ jobs:
           overwrite: true
           retention-days: 1
       ### TODO: LAB ZONE - Summaries
-      - name: summary
-        if: ${{ always() }}
-        run: |
-          echo "### Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Environment: $TARGET_ENVIRONMENT" >> $GITHUB_STEP_SUMMARY
-          echo "Configuration: $TF_DIR" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| job | exitcode |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| terraform fmt | $TF_FMT_RESULT |" >> $GITHUB_STEP_SUMMARY
-          echo "| terraform validate | $TF_VALIDATE_RESULT |" >> $GITHUB_STEP_SUMMARY
-          echo "| terraform plan | $TF_PLAN_RESULT |" >> $GITHUB_STEP_SUMMARY
+      - name: plan output
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
+        run: terraform show -no-color $TF_PLAN_FILE > $GITHUB_STEP_SUMMARY
         env:
-          TARGET_ENVIRONMENT: ${{ inputs.environment }}
-          TF_DIR: ${{ inputs.terraform_path }}
-          TF_FMT_RESULT: ${{ steps.fmt.outputs.exitcode }}
-          TF_VALIDATE_RESULT: ${{ steps.validate.outputs.exitcode }}
-          TF_PLAN_RESULT: ${{ steps.plan.outputs.exitcode }}
+          TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
+      # - name: summary
+      #   if: ${{ always() }}
+      #   run: |
+      #     echo "### Summary" >> $GITHUB_STEP_SUMMARY
+      #     echo "" >> $GITHUB_STEP_SUMMARY
+      #     echo "Environment: $TARGET_ENVIRONMENT" >> $GITHUB_STEP_SUMMARY
+      #     echo "Configuration: $TF_DIR" >> $GITHUB_STEP_SUMMARY
+      #     echo "" >> $GITHUB_STEP_SUMMARY
+      #     echo "| job | exitcode |" >> $GITHUB_STEP_SUMMARY
+      #     echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+      #     echo "| terraform fmt | $TF_FMT_RESULT |" >> $GITHUB_STEP_SUMMARY
+      #     echo "| terraform validate | $TF_VALIDATE_RESULT |" >> $GITHUB_STEP_SUMMARY
+      #     echo "| terraform plan | $TF_PLAN_RESULT |" >> $GITHUB_STEP_SUMMARY
+      #   env:
+      #     TARGET_ENVIRONMENT: ${{ inputs.environment }}
+      #     TF_DIR: ${{ inputs.terraform_path }}
+      #     TF_FMT_RESULT: ${{ steps.fmt.outputs.exitcode }}
+      #     TF_VALIDATE_RESULT: ${{ steps.validate.outputs.exitcode }}
+      #     TF_PLAN_RESULT: ${{ steps.plan.outputs.exitcode }}
       ### TODO: LAB ZONE - Summaries
 
   apply:
