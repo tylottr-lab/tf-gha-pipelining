@@ -86,7 +86,7 @@ on:
         description: Perform only a plan if this is true
         required: false
         default: false
-      provide_plan_summary:
+      output_plan_summary:
         type: boolean
         description: Output a summary with the plan
         required: false
@@ -132,17 +132,8 @@ jobs:
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_CLI_ARGS_plan: ${{ inputs.terraform_plan_args }}
-      - name: upload plan
-        uses: actions/upload-artifact@v4
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
-        with:
-          name: ${{ env.TF_PLAN_FILE }}
-          path: "**/${{ env.TF_PLAN_FILE }}"
-          if-no-files-found: error
-          overwrite: true
-          retention-days: 1
       - name: output plan
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply && inputs.provide_plan_summary }}
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && inputs.output_plan_summary }}
         run: |
           TF_PLAN_OUTPUT=$(terraform show -no-color $TF_PLAN_FILE)
           cat << EOF > $GITHUB_STEP_SUMMARY
@@ -155,6 +146,15 @@ jobs:
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_DIR: ${{ inputs.terraform_path }}
+      - name: upload plan
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
+        with:
+          name: ${{ env.TF_PLAN_FILE }}
+          path: "**/${{ env.TF_PLAN_FILE }}"
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 1
       ### TODO: LAB ZONE - Summaries
       # - name: summary
       #   if: ${{ always() }}
