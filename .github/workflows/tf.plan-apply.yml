@@ -144,12 +144,13 @@ jobs:
       - name: output plan
         if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply && inputs.provide_plan_summary }}
         run: |
-          cat << EOF >> $GITHUB_STEP_SUMMARY
+          TF_PLAN_OUTPUT=$(terraform show -no-color $TF_PLAN_FILE)
+          cat << EOF > $GITHUB_STEP_SUMMARY
           Plan Summary for $TF_DIR/$TF_PLAN_FILE
 
-          ```
-          terraform show -no-color $TF_PLAN_FILE
-          ```
+          \`\`\`
+          $TF_PLAN_OUTPUT
+          \`\`\`
           EOF
         env:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
