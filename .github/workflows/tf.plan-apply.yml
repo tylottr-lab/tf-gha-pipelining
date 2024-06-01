@@ -152,7 +152,7 @@ jobs:
           TF_PLAN_FILE: ${{ env.TF_PLAN_FILE }}
           TF_DIR: ${{ inputs.terraform_path }}
       - name: upload plan
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
         with:
           name: ${{ env.TF_PLAN_FILE }}
