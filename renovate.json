@@ -1,0 +1,14 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "platform": "github",
+  "endpoint": "https://api.github.com/",
+  "repositories": ["tylottr-lab/tf-gha-pipelinine"],
+  "autodiscover": false,
+  "requireConfig": "ignored",
+  "extends": [
+    "config:recommended"
+  ],
+  "automerge": false,
+  "autoApprove": false,
+  "onboarding": false
+}
