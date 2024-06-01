@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "dependencyDashboard": false,
-  "automerge": false,
+  "dependencyDashboard": true,
+  "automerge": true,
   "autoApprove": false
 }
