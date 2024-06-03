@@ -1,0 +1,29 @@
+name: General GHA Testing
+on:
+  workflow_dispatch:
+    inputs:
+      a_switch:
+        type: boolean
+        description: A switch!
+        required: false
+        default: true
+  push:
+    branches: ["*"]
+
+jobs:
+  set_and_true_or_false:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.workflow_dispatch || false }}
+    steps:
+      - run: echo "I should run if inputs.workflow_dispatch is set and true."
+  set_and_false_or_false:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.workflow_dispatch || false }}
+    steps:
+      - run: echo "I should never run."
+  unset_and_true_or_true:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.workflow_dispatch || true }}
+    steps:
+      - run: echo "I should run if inputs.workflow_dispatch is not set and true."
+      
