@@ -2,7 +2,7 @@ name: General GHA Testing
 on:
   workflow_dispatch:
     inputs:
-      plan_only:
+      skip_apply:
         type: boolean
         description: Do I just plan
         required: false
@@ -16,6 +16,6 @@ jobs:
     with:
       terraform_path: app1/envs/dev
       terraform_plan_args: -var valid=super
-      plan_only: ${{ inputs.plan_only }}
+      skip_apply: ${{ inputs.skip_apply }}
     permissions:
       issues: write
