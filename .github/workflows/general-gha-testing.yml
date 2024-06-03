@@ -39,7 +39,7 @@ jobs:
   apply:
     runs-on: ubuntu-latest
     # we want to plan AND apply. 
-    if: ${{ inputs.plan_only == false || false }}
+    if: ${{ !inputs.plan_only || false }}
     steps:
       - run: echo "I am going to plan and apply."
   
