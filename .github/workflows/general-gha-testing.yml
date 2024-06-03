@@ -7,14 +7,14 @@ on:
         description: Do I just plan
         required: false
         default: true
-  push:
-    branches: ["*"]
+  # push:
+  #   branches: ["*"]
 
 jobs:
   tf-plan-apply:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/test
-      plan_only: ${{ inputs.plan_only || true }}
+      plan_only: ${{ inputs.plan_only }}
     permissions:
       issues: write
