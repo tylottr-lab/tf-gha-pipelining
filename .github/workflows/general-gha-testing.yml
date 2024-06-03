@@ -17,3 +17,5 @@ jobs:
       terraform_path: app1/envs/dev
       terraform_plan_args: -var valid=super
       plan_only: ${{ inputs.plan_only }}
+    permissions:
+      issues: write
