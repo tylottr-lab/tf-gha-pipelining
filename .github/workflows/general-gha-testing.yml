@@ -7,6 +7,11 @@ on:
         description: A switch!
         required: false
         default: true
+      plan_only:
+        type: boolean
+        description: A switch!
+        required: false
+        default: true
   push:
     branches: ["*"]
 
@@ -25,3 +30,14 @@ jobs:
       - run: echo "I should run if a_switch is true. I should not run if a_switch is false or not provided. The value of a_switch is $A_SWITCH."
         env:
           a_switch: ${{ inputs.a_switch }}
+  plan:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.plan_only || true }}
+    steps:
+      - run: echo "I am only going to perform a plan."
+  apply:
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.plan_only || true }}
+    steps:
+      - run: echo "I am going to plna and apply."
+  
