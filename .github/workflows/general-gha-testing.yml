@@ -11,19 +11,13 @@ on:
     branches: ["*"]
 
 jobs:
-  set_and_true_or_false:
-    runs-on: ubuntu-latest
-    if: ${{ inputs.a_switch || false }}
-    steps:
-      - run: echo "I should run if inputs.workflow_dispatch is set and true."
-  set_and_false_or_false:
-    runs-on: ubuntu-latest
-    if: ${{ inputs.a_switch || false }}
-    steps:
-      - run: echo "I should never run."
-  unset_and_true_or_true:
+  use_input_value_first_but_default_to_true:
     runs-on: ubuntu-latest
     if: ${{ inputs.a_switch || true }}
     steps:
-      - run: echo "I should run if inputs.workflow_dispatch is not set and true."
-      
+      - run: echo "I should run if a_switch is true or not provided. I should not run if a_switch is false."
+  use_input_value_first_but_default_to_false:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.a_switch || false }}
+    steps:
+      - run: echo "I should run if a_switch is true. I should not run if a_switch is false or not provided."
