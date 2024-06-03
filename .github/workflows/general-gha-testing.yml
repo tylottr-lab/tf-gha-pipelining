@@ -15,7 +15,6 @@ jobs:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       terraform_path: app1/envs/dev
-      terraform_plan_args: -var valid=super
       skip_apply: ${{ inputs.skip_apply || true }}
     permissions:
       issues: write
