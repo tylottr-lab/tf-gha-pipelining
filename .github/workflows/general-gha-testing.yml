@@ -9,7 +9,7 @@ on:
         default: true
       plan_only:
         type: boolean
-        description: A switch!
+        description: Do I just plan
         required: false
         default: true
   push:
