@@ -15,9 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.a_switch || true }}
     steps:
-      - run: echo "I should run if a_switch is true or not provided. I should not run if a_switch is false."
+      - run: echo "I should run if a_switch is true or not provided. I should not run if a_switch is false. The value of a_switch is $A_SWITCH."
+        env:
+          a_switch: ${{ inputs.a_switch }}
   use_input_value_first_but_default_to_false:
     runs-on: ubuntu-latest
     if: ${{ inputs.a_switch || false }}
     steps:
-      - run: echo "I should run if a_switch is true. I should not run if a_switch is false or not provided."
+      - run: echo "I should run if a_switch is true. I should not run if a_switch is false or not provided. The value of a_switch is $A_SWITCH."
+        env:
+          a_switch: ${{ inputs.a_switch }}
