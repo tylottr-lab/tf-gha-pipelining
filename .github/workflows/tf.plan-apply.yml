@@ -81,7 +81,7 @@ on:
         description: Arguments to pass to terraform plan
         required: false
         default: ""
-      skip_apply:
+      plan_only:
         type: boolean
         description: Perform only a plan if this is true
         required: false
@@ -153,7 +153,7 @@ jobs:
           TF_DIR: ${{ inputs.terraform_path }}
       - name: upload plan
         uses: actions/upload-artifact@v4
-        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
+        if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.exitcode == 2 && inputs.plan_only == false }}
         with:
           name: ${{ env.TF_PLAN_FILE }}
           path: "**/${{ env.TF_PLAN_FILE }}"
@@ -190,7 +190,7 @@ jobs:
     needs: [plan]
     environment:
       name: ${{ inputs.environment }}
-    if: ${{ github.event_name != 'pull_request' && needs.plan.outputs.exitcode == 2 && !inputs.skip_apply }}
+    if: ${{ github.event_name != 'pull_request' && needs.plan.outputs.exitcode == 2 && inputs.plan_only == false }}
     permissions:
       issues: write
     steps:
