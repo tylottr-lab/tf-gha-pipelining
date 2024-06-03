@@ -103,8 +103,6 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.terraform_path }}
-    environment:
-      name: ${{ inputs.environment }}
     outputs:
       exitcode: ${{ steps.plan.outputs.exitcode }}
     steps:
