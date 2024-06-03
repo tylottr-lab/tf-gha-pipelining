@@ -2,11 +2,6 @@ name: General GHA Testing
 on:
   workflow_dispatch:
     inputs:
-      a_switch:
-        type: boolean
-        description: A switch!
-        required: false
-        default: true
       plan_only:
         type: boolean
         description: Do I just plan
@@ -16,30 +11,9 @@ on:
     branches: ["*"]
 
 jobs:
-  # use_input_value_first_but_default_to_true:
-  #   runs-on: ubuntu-latest
-  #   if: ${{ inputs.a_switch || true }}
-  #   steps:
-  #     - run: echo "I should run if a_switch is true or not provided. I should not run if a_switch is false. The value of a_switch is $A_SWITCH."
-  #       env:
-  #         a_switch: ${{ inputs.a_switch }}
-  # use_input_value_first_but_default_to_false:
-  #   runs-on: ubuntu-latest
-  #   if: ${{ inputs.a_switch || false }}
-  #   steps:
-  #     - run: echo "I should run if a_switch is true. I should not run if a_switch is false or not provided. The value of a_switch is $A_SWITCH."
-  #       env:
-  #         a_switch: ${{ inputs.a_switch }}
-  plan:
-    runs-on: ubuntu-latest
-    # we want to only do a plan. assume true if we have no input.
-    if: ${{ inputs.plan_only || true }}
-    steps:
-      - run: echo "I am only going to perform a plan."
-  apply:
-    runs-on: ubuntu-latest
-    # we want to plan AND apply. 
-    if: ${{ !inputs.plan_only || false }}
-    steps:
-      - run: echo "I am going to plan and apply."
-  
+  tf-plan-apply:
+    uses: ./.github/workflows/tf.plan-apply.yml
+    with:
+      terraform_path: app1/envs/dev
+      terraform_plan_args: -var valid=super
+      plan_only: ${{ inputs.plan_only }}
