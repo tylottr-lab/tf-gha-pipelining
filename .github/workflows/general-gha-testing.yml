@@ -15,9 +15,6 @@ on:
   push:
     branches: ["*"]
 
-env:
-  TF_PLAN_ONLY: ${{ inputs.plan_only || true }}
-
 jobs:
   # use_input_value_first_but_default_to_true:
   #   runs-on: ubuntu-latest
@@ -35,12 +32,14 @@ jobs:
   #         a_switch: ${{ inputs.a_switch }}
   plan:
     runs-on: ubuntu-latest
-    if: ${{ env.TF_PLAN_ONLY }}
+    # we want to only do a plan. assume true if we have no input.
+    if: ${{ inputs.plan_only || true }}
     steps:
       - run: echo "I am only going to perform a plan."
   apply:
     runs-on: ubuntu-latest
-    if: ${{ !env.TF_PLAN_ONLY }}
+    # we want to plan AND apply. 
+    if: ${{ !inputs.plan_only || false }}
     steps:
       - run: echo "I am going to plan and apply."
   
