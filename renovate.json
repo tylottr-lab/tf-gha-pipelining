@@ -16,8 +16,10 @@
       "matchStrings": [
         "\\ *# renovate: datasource=terraform\\n+.+: (?<currentValue>\\S+)"
       ],
-      "datasourceTemplate": "terraform-providers",
-      "depNameTemplate": "hashicorp/terraform"
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "hashicorp/terraform",
+      "depTypeTemplate": "required_version",
+      "versioningTemplate": "hashicorp",
     }
   ]
 }
