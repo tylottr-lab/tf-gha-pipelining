@@ -14,7 +14,7 @@
         "(^|/).github/workflows/.+\\.y?ml$"
       ],
       "matchStrings": [
-        "\\ *# renovate: datasource=terraform\\n+.+: (?<currentValue>\\S+)"
+        "\\ *# renovate: datasource=terraform\\n+.+: \"(?<currentValue>\\S+)\""
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "hashicorp/terraform",
