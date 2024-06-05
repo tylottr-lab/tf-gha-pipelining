@@ -38,6 +38,7 @@ jobs:
             # terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
+      terraform_version: "1.7.4"
       terraform_path: app1/envs/${{ matrix.configs.environment }}
       terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
       skip_apply: ${{ matrix.configs.skip_apply }}
