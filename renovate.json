@@ -19,7 +19,7 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "hashicorp/terraform",
       "depTypeTemplate": "required_version",
-      "versioningTemplate": "hashicorp",
+      "versioningTemplate": "hashicorp"
     }
   ]
 }
