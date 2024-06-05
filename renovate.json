@@ -11,7 +11,7 @@
       "customType": "regex",
       "description": "Process Terraform versions in workflow YAML files.",
       "fileMatch": [
-        "(^|/).github/workflows/*.y?ml$"
+        "(^|/).github/workflows/.+\\.y?ml$"
       ],
       "matchStrings": [
         "\\ *# renovate: datasource=terraform\\n+.+: (?<currentValue>\\S+)"
