@@ -5,5 +5,19 @@
   ],
   "dependencyDashboard": true,
   "automerge": true,
-  "autoApprove": false
+  "autoApprove": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Process Terraform versions in workflow YAML files.",
+      "fileMatch": [
+        "(^|/).github/workflows/*.y?ml$"
+      ],
+      "matchStrings": [
+        "\\ *# renovate: datasource=terraform\\n+.+: (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "terraform-providers",
+      "depNameTemplate": "hashicorp/terraform"
+    }
+  ]
 }
