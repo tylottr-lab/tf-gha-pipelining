@@ -1,23 +1,42 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "schedule:daily",
+    ":automergeMinor",
+    ":separateMultipleMajorReleases",
+    ":semanticCommits",
+    ":prHourlyLimit4",
+    ":docker"
   ],
-  "dependencyDashboard": true,
-  "automerge": true,
-  "autoApprove": false,
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Process Terraform versions in workflow YAML files.",
+      "description": "Process Terraform versions in CI YAML files.",
       "fileMatch": [
-        "(^|/).github/workflows/.+\\.y?ml$"
+        "(^|/).github/workflows/.+\\.y?ml$",
+        "(^|/).+/azure-pipelines\\.y?ml$",
       ],
       "matchStrings": [
-        "\\ *# renovate: datasource=terraform\\n+.+: \"(?<currentValue>\\S+)\""
+        "# renovate: depName=terraform\\n+.+: \"(?<currentValue>\\S+)\""
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "hashicorp/terraform",
+      "depTypeTemplate": "required_version",
+      "versioningTemplate": "hashicorp"
+    },
+    {
+      "customType": "regex",
+      "description": "Process OpenTofu versions in CI YAML files.",
+      "fileMatch": [
+        "(^|/).github/workflows/.+\\.y?ml$",
+        "(^|/).+/azure-pipelines\\.y?ml$",
+      ],
+      "matchStrings": [
+        "# renovate: depName=opentofu\\n+.+: \"(?<currentValue>\\S+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "opentofu/opentofu",
       "depTypeTemplate": "required_version",
       "versioningTemplate": "hashicorp"
     }

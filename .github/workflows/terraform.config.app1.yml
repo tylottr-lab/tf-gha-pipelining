@@ -38,8 +38,8 @@ jobs:
             # terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
-      # renovate: datasource=terraform
-      terraform_version: "1.7.4"
+      # renovate: datasource=opentofu
+      terraformVersion: "1.7.2"
       terraform_path: app1/envs/${{ matrix.configs.environment }}
       terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
       skip_apply: ${{ matrix.configs.skip_apply }}
