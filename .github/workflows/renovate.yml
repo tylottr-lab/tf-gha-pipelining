@@ -18,3 +18,4 @@ jobs:
           RENOVATE_GIT_AUTHOR: Renovate Bot <bot@renovateapp.com>
           RENOVATE_AUTODISCOVER: "false"
           RENOVATE_REPOSITORIES: tylottr-lab/tf-gha-pipelining
+          LOG_LEVEL: debug
