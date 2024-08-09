@@ -32,7 +32,7 @@ jobs:
   tf-plan-apply:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
-      # renovate: datasource=terraform
+      # renovate: depName=terraform
       terraform_version: 1.7.3
       terraform_path: app1/envs/dev
       # continue_on_fmt_error: true
