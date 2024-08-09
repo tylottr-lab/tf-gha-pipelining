@@ -35,7 +35,7 @@ jobs:
       terraform_path: app1/envs/dev
       # continue_on_fmt_error: true
       terraform_plan_args: -var valid=super
-      # skip_apply: true
+      # plan_only: true
       environment: terraform
     permissions:
       contents: read

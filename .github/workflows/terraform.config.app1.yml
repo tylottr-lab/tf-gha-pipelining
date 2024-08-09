@@ -31,10 +31,10 @@ jobs:
       matrix:
         configs:
           - environment: dev
-            skip_apply: false
+            plan_only: false
             # terraform_plan_args: -var valid=dev
           - environment: test
-            skip_apply: false
+            plan_only: false
             # terraform_plan_args: -var valid=test
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
@@ -42,6 +42,6 @@ jobs:
       terraform_version: "1.7.2"
       terraform_path: app1/envs/${{ matrix.configs.environment }}
       terraform_plan_args: ${{ matrix.configs.terraform_plan_args }}
-      skip_apply: ${{ matrix.configs.skip_apply }}
+      plan_only: ${{ matrix.configs.plan_only }}
       environment: ${{ matrix.configs.environment }}
       # approvers: tylottr
