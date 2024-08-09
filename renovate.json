@@ -12,33 +12,16 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Process Terraform versions in CI YAML files.",
+      "description": "Process github releases in YAML files.",
       "fileMatch": [
-        "(^|/).github/workflows/.+\\.y?ml$",
-        "(^|/).+/azure-pipelines\\.y?ml$"
+        "(^|/).+\\.y?ml$"
       ],
       "matchStrings": [
-        "# renovate: depName=terraform\\n+.+: \"(?<currentValue>\\S+)\""
+        "# renovate: datasource=github-releases repository=(?<depName>\\S+)\\n+.+: (?<currentValue>\\S+)",
+        "# renovate: datasource=github-releases depName=(?<depName>\\S+)\\n+.+: (?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "hashicorp/terraform",
-      "depTypeTemplate": "required_version",
-      "versioningTemplate": "hashicorp"
-    },
-    {
-      "customType": "regex",
-      "description": "Process OpenTofu versions in CI YAML files.",
-      "fileMatch": [
-        "(^|/).github/workflows/.+\\.y?ml$",
-        "(^|/).+/azure-pipelines\\.y?ml$"
-      ],
-      "matchStrings": [
-        "# renovate: depName=opentofu\\n+.+: \"(?<currentValue>\\S+)\""
-      ],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "opentofu/opentofu",
-      "depTypeTemplate": "required_version",
-      "versioningTemplate": "hashicorp"
+      "depNameTemplate": "{{depName}}"
     }
   ]
 }
