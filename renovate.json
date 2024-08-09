@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended",
     "schedule:daily",
-    ":automerge",
+    ":automergeAll",
     ":separateMultipleMajorReleases",
     ":semanticCommits",
     ":prHourlyLimit4",
