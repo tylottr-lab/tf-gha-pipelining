@@ -32,6 +32,8 @@ jobs:
   tf-plan-apply:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
+      # renovate: datasource=terraform
+      terraform_version: 1.7.3
       terraform_path: app1/envs/dev
       # continue_on_fmt_error: true
       terraform_plan_args: -var valid=super
@@ -39,4 +41,5 @@ jobs:
       environment: terraform
     permissions:
       contents: read
+      issues: write
     needs: [tf-code-quality]
