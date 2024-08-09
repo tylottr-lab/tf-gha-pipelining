@@ -15,7 +15,7 @@
       "description": "Process Terraform versions in CI YAML files.",
       "fileMatch": [
         "(^|/).github/workflows/.+\\.y?ml$",
-        "(^|/).+/azure-pipelines\\.y?ml$",
+        "(^|/).+/azure-pipelines\\.y?ml$"
       ],
       "matchStrings": [
         "# renovate: depName=terraform\\n+.+: \"(?<currentValue>\\S+)\""
@@ -30,7 +30,7 @@
       "description": "Process OpenTofu versions in CI YAML files.",
       "fileMatch": [
         "(^|/).github/workflows/.+\\.y?ml$",
-        "(^|/).+/azure-pipelines\\.y?ml$",
+        "(^|/).+/azure-pipelines\\.y?ml$"
       ],
       "matchStrings": [
         "# renovate: depName=opentofu\\n+.+: \"(?<currentValue>\\S+)\""
