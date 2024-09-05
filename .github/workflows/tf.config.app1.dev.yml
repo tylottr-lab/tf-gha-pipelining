@@ -33,7 +33,7 @@ jobs:
     uses: ./.github/workflows/tf.plan-apply.yml
     with:
       # renovate: datasource=github-releases depName=hashicorp/terraform
-      terraform_version: 1.7.3
+      terraform_version: 1.9.5
       terraform_path: app1/envs/dev
       # continue_on_fmt_error: true
       terraform_plan_args: -var valid=super
